@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS335 Assignment 1 - Web Application Development</title>
+
+    <link href="xli556.css" rel="stylesheet" type="text/css">
+    <script src="xli556.js" type="text/javascript"></script>
+</head>
+<body>
+    <div style="width: 100%;" class="logoLine">
+    <img id="logoImg" src="http://redsox.uoa.auckland.ac.nz/ds/logo-192x192.png" title="shopLogo">
+    <!-- logical sections with unicode symbol -->
+    <table class="logoTable">
+        <tr style="cursor: pointer;">
+            <td id="logoHome" title="Home" onclick="showHome();">&#127968</td> 
+            <td id="logoProducts" title="Products" onclick="showProducts();getProInfo();">&#128722</td>
+            <td id="logoLocation" title="Location" onclick="showLocation();getLocationInfo();">&#128204</td>
+            <td id="logoNews" title="News" onclick="showNews();getNewsInfo();">&#128240</td>
+            <td id="logoGB" title="Guest Book" onclick="showGuestBook();">&#128214</td>
+        </tr>
+    </table>
+    </div> 
+
+    <div id="Home">
+        <h1>Dunedin Dairy</h1>
+        <hr class="hrline">
+        <p>Welcome to the Dunedin Dairy, the leading online dairy shop in New Zealand. We take pride in sourcing the best dairy products from within New Zealand and abroad. Our shop in open 24/7, and we strive to deliver your purchases promptly.</p>
+        <p>Keeping in mind the safety of you and our staff, our deliveries are contactless.</p>
+        <div class="cow">
+        <img style="width:100%;" src="https://d1poczgreawftx.cloudfront.net/7/w23114_kiddhannah_kiddh23114sacredcow%282019%2901.jpg?i=90716">
+        <br>
+        <p>Hannah Kidd - Sacred Cow (2019) Milford Gallleries Dunedin</p>
+        <br>
+        <hr>
+        <p>&copy; All rights reserved. V1.0.0</p>
+        </div>
+    </div>
+
+    <div id="Products">
+        <h1>Products</h1>
+        <hr class="hrline">
+        <div class="search-box">
+            <input id="searchbar" type="text" oninput="searchProInfo()" placeholder="Search..">
+        </div>
+        <br>
+        <div id="ourTable"></div>
+    </div>
+
+    <div id="News">
+        <h1>News</h1>
+        <hr class="hrline">
+        <p id="ourNews"></p>
+    </div>
+
+    <div id="Location">
+        <h1>Location</h1>
+        <hr class="hrline">
+        <img id="locationMap" src="http://redsox.uoa.auckland.ac.nz/ds/map.png">
+        <br>
+        <div class=locationBlock>
+        <div id="shopLocation"></div>
+        <p><a href="http://redsox.uoa.auckland.ac.nz/ds/mecard.svg">Add us to your address book</a></p>
+        </div>
+    </div>
+
+    <div id="GuestBook">
+        <h1>Guest Book</h1>
+        <hr class="hrline">
+        <p id="pSign">Please sign our guest book.</p>
+        <p id="cheesyComment">Cheesy comments are OK as long as they aren't cheesy</p>
+
+        <div id="postComment">
+            <textarea id="comment" name="message" placeholder="Type your comments here"></textarea>
+            
+            <div class="namePart">
+                
+                <p id="yourName">Your name:</p>
+                <input id="name" type="text" placeholder="Enter your name here">
+                <button onclick="postCommentInfo(this);"  id="sendButton">Send</button>
+            <!--onclick="postCommentInfo();"-->
+            </div>
+        </div>
+        <hr style="width: 50%;">
+
+        <div class="entriesDiv">
+        <p>Recent Entries</p>
+            <iframe id="iframeComment" src="http://redsox.uoa.auckland.ac.nz/ds/DairyService.svc/htmlcomments"></iframe>
+        </div>
+        <!--<button onclick="(e) => e.preventDefault()">My Button</button>-->
+    </div>
+</body>
+</html>

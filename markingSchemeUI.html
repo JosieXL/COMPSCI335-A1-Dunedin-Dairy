@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <title>Marking Scheme &mdash; Web Application Development</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <meta name="author" content="Andrey Konstantinov">
+   <link rel="icon" href="https://cdn4.iconfinder.com/data/icons/business-2-7/512/checklist-512.png">
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+   <script>
+      function populateTable(reqsArray) {
+         reqsArray.forEach(function (element) {
+            let node = '<td scope="col" style="text-align:center;"><div class="form-check"><input class="form-check-input mark-checkbox" type="checkbox" value=5 onChange="adjustMark(this)"></div></td><td style="text-align:center;"><span class="badge badge-secondary badge-mark">+5</span></td><td>' + element + '</td></tr>';
+            tableBody.insertAdjacentHTML('beforeend', node)
+         });
+         let thirdPartyNode = '<td scope="col" style="text-align:center;"><div class="form-check"><input class="form-check-input malus-checkbox" type="checkbox" value="thirdParty" onChange="toggleMalus(this)"></div></td><td style="text-align:center;"><span class="badge badge-secondary badge-mark">-30%</span></td><td style="color:red;">' + "Use of third party framework or libraries" + '</td></tr>';
+         let browserIncompatNode = '<td scope="col" style="text-align:center;"><div class="form-check"><input class="form-check-input malus-checkbox" type="checkbox" value="browserIncompat" onChange="toggleMalus(this)"></div></td><td style="text-align:center;"><span class="badge badge-secondary badge-mark">-20%</span></td><td style="color:red;">' + "Browser incompatibility" + '</td></tr>';
+         let cheatingNode = '<td scope="col" style="text-align:center;"><div class="form-check"><input class="form-check-input malus-checkbox" type="checkbox" value="cheating" onChange="toggleMalus(this)"></div></td><td style="text-align:center;"><span class="badge badge-secondary badge-mark">-100%</span></td><td style="color:red;">' + "Violation of academic integrity or inability to explain your code" + '</td></tr>';
+         [thirdPartyNode, browserIncompatNode, cheatingNode].forEach(function (element) {
+            tableBody.insertAdjacentHTML('beforeend', element)
+         });
+      }
+
+      function calculateMark() {
+         adjustedMark = Math.max(mark - mark * penalties.cheating - 0.3 * mark * penalties.thirdParty - 0.2 * mark * penalties.browserIncompat, 0);
+
+         icon = '<i class="fas fa-check fa-1x"></i>';
+         failIcon = '<i class="fas fa-times fa-1x"></i>';
+
+         switch (true) {
+            case (adjustedMark >= 90):
+               grade = "A+";
+               break;
+            case (adjustedMark >= 85):
+               grade = "A";
+               break;
+            case (adjustedMark >= 80):
+               grade = "A-";
+               break;
+            case (adjustedMark >= 75):
+               grade = "B+";
+               break;
+            case (adjustedMark >= 70):
+               grade = "B";
+               break;
+            case (adjustedMark >= 65):
+               grade = "B-";
+               break;
+            case (adjustedMark >= 60):
+               grade = "C+";
+               break;
+            case (adjustedMark >= 55):
+               grade = "C";
+               break;
+            case (adjustedMark >= 50):
+               grade = "C-";
+               break;
+            case (adjustedMark >= 45):
+               grade = "D+";
+               icon = failIcon;
+               break;
+            case (adjustedMark >= 40):
+               grade = "D";
+               icon = failIcon;
+               break;
+            default:
+               grade = "D-";
+               icon = failIcon;
+         }
+         totalMark.innerHTML = icon + " " + adjustedMark;
+         enableSave();
+      }
+
+      function adjustMark(cb) {
+         mark = (cb.checked) ? mark + parseInt(cb.value) : mark - parseInt(cb.value);
+         calculateMark();
+         flipBadge(cb, cb.checked, false);
+      }
+
+      function toggleMalus(cb) {
+         penalties[cb.value] = cb.checked ? 1 : 0;
+         flipBadge(cb, cb.checked, true);
+         calculateMark();
+      }
+
+      function flipBadge(element, makeActive, isRed) {
+         badgeColor = isRed ? "badge-danger" : "badge-success";
+         matchingBadge = element.parentElement.parentElement.nextSibling.getElementsByClassName('badge-mark')[0];
+         if (makeActive) {
+            matchingBadge.classList.remove("badge-secondary");
+            matchingBadge.classList.add(badgeColor);
+         } else {
+            matchingBadge.classList.remove(badgeColor);
+            matchingBadge.classList.add("badge-secondary");
+         }
+      }
+
+      function checkAll(cb) {
+         let value = cb.checked ? 100 : 0;
+         Array.prototype.forEach.call(checkboxes, function (element) {
+            element.checked = cb.checked;
+            flipBadge(element, cb.checked, false);
+         });
+
+         if (!cb.checked) {
+            Array.prototype.forEach.call(malusCheckboxes, function (element) {
+               element.checked = cb.checked;
+               flipBadge(element, cb.checked, true);
+            });
+            penalties.cheating = 0;
+            penalties.browserIncompat = 0;
+            penalties.thirdParty = 0;
+         }
+
+         mark = value;
+         calculateMark();
+      }
+
+      function saveData() {
+         savedMarks = [];
+         savedMali = [];
+         Array.prototype.forEach.call(checkboxes, function (element) {
+            savedMarks.push(element.checked);
+         });
+
+         Array.prototype.forEach.call(malusCheckboxes, function (element) {
+            savedMali.push(element.checked);
+         });
+
+         localStorage.setItem("storedMarks", JSON.stringify(savedMarks));
+         localStorage.setItem("storedMali", JSON.stringify(savedMali));
+
+         document.getElementById("saveButton").style.display = "none";
+         document.getElementById("saveNotif").style.display = "block";
+      }
+
+      function enableSave() {
+         document.getElementById("saveNotif").style.display = "none";
+         document.getElementById("saveButton").style.display = "block";
+      }
+
+      function retrieveData() {
+         savedMarks = JSON.parse(localStorage.getItem("storedMarks"));
+         savedMali = JSON.parse(localStorage.getItem("storedMali"));
+
+         for (i = 0; i < savedMarks.length; i++) {
+            checkboxes[i].checked = savedMarks[i];
+            if (checkboxes[i].checked) {
+               adjustMark(checkboxes[i], parseInt(checkboxes[i].value));
+            }
+         }
+
+         for (i = 0; i < savedMali.length; i++) {
+            malusCheckboxes[i].checked = savedMali[i];
+            toggleMalus(malusCheckboxes[i], malusCheckboxes[i].value);
+         }
+      }
+
+      function reset() {
+         document.getElementById('check-all-box').checked = false;
+         reqsArray = ["Showing the correct logo",
+            "Having an appropriate icon for the site",
+            "Having the logical sections (home, displays, news, location, and guest book) and being able to see only one section at a time",
+            "Being able to submit comments",
+            "Being able to view the current set of comments",
+            "Being able to see the list of products",
+            "Being able to search the list of products",
+            "Being able to shrink the list of products dynamically",
+            "Being able to see the photos of products",
+            "Being able to see a list of news items",
+            "Being able to see the pictures associated with news items",
+            "Being able to see details of each news item",
+            "Being able to see the location map",
+            "Being able to see the store address",
+            "Being able to call the store",
+            "Being able to email the store",
+            "Being able to add the store's details to the address book",
+            "Being able to view the site well on a narrow width browser (width similar to a mobile screen)",
+            "The overall look and feel of the site"];
+         mark = 0;
+         savedMarks = [];
+         savedMali = [];
+         penalties = { thirdParty: 0, browserIncompat: 0, cheating: 0 };
+         checkboxes = document.getElementsByClassName('mark-checkbox');
+         malusCheckboxes = document.getElementsByClassName('malus-checkbox');
+         tableBody = document.getElementById('marking-table-body');
+         totalMark = document.getElementById('total-mark');
+      }
+   </script>
+</head>
+
+<body>
+
+   <div class="container-fluid mt-3 pl-3">
+      <div class="row">
+         <div class="col-sm-8">
+            <div class="alert bg-dark px-2">
+               <h5 style="color:white;"><i class="fas fa-clipboard-list fa-1x"></i> Marking Scheme &mdash; Web Application Development</h5>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-6">
+            <table class="table table-bordered" style="table-layout:auto">
+               <thead>
+                  <tr>
+                     <th scope="col" style="vertical-align: top; text-align:center;"><div class="form-check"><input id="check-all-box" class="form-check-input" type="checkbox" onChange="checkAll(this)"></div></th>
+                     <th scope="col" style="text-align:center;">±</th>
+                     <th scope="col" style="text-align:left;">Requirement</th>
+                  </tr>
+               </thead>
+               <tbody id="marking-table-body">
+                  <tr>
+               </tbody>
+            </table>
+         </div>
+         <div class="col-sm-2">
+            <div class="card w-auto">
+               <div class="card-header bg-dark" style="color:white;">Total marks</div>
+               <div class="card-body">
+                  <p id="total-mark" class="card-text">0</p>
+               </div>
+               <div class="card-footer">
+                  <button type="button" id="saveButton" class="btn btn-success" onClick="saveData()"><i class="fas fa-save fa-1x"></i> Save marks</button>
+                  <button type="button" id="saveNotif" class="btn btn-success" disabled style="display: none;"><i class="fas fa-check fa-1x"></i> Saved.</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-8">
+            <div class="alert alert-light px-0" role="alert">
+               <i class="fas fa-bolt fa-1x"></i> Powered by <img src="https://upload.wikimedia.org/wikipedia/commons/e/ea/Boostrap_logo.svg" height="15" width="15"> <a href="https://getbootstrap.com/docs/4.1/getting-started/introduction/">Bootstrap 4.1.3</a>, <i class="fas fa-flag fa-1x"></i> <a href="https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css">Font Awesome 5.2.0</a> and <i class="far fa-clock fa-1x"></i> <a href="https://i.kym-cdn.com/photos/images/original/000/101/781/Y0UJC.png">extreme procrastination</a>.
+               Credit: Andrey Konstantinov
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <script>
+      reset();
+      populateTable(reqsArray);
+      if (localStorage.getItem("storedMarks") != null) {
+         retrieveData();
+      }
+      calculateMark();
+   </script>
+</body>
+
+</html>
